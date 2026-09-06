@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// SPDX-FileCopyrightText: 2026 Ted Smith
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { GoalsApiClient } from './client';
 import { createGoalsMcpServer } from './server';

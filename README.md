@@ -24,7 +24,7 @@ and an MCP client that supports local stdio servers.
       "args": [
         "--yes",
         "--ignore-scripts",
-        "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.0/tedks-goals-mcp-0.1.0.tgz",
+        "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.1/tedks-goals-mcp-0.1.1.tgz",
         "goals-mcp"
       ],
       "env": {
@@ -77,5 +77,15 @@ This repository is the public distribution of the Goals MCP adapter. Its source
 and API contracts are exported together from the Goals development repository.
 Report bugs or propose changes here; maintainers integrate accepted fixes into
 the shared source before the next release. This avoids divergent API and MCP
-validation. Releases contain compiled JavaScript and source under the MIT license;
-the hosted Goals service and Sync subscription are separate.
+validation. Releases contain compiled JavaScript and source; the hosted Goals
+service and Sync subscription are separate.
+
+## License
+
+Copyright (C) 2026 Ted Smith.
+
+Goals MCP is licensed under the [GNU Affero General Public License, version 3
+only](LICENSE) (`AGPL-3.0-only`). The MIT designation in the initial publication
+was a mistake and did not reflect the owner's intended license. That release
+has been withdrawn; use v0.1.1 or later. Third-party dependencies retain their
+own licenses.

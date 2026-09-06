@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Ted Smith
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /** Portable API/MCP contract primitives; no database or application dependencies. */
 
 export const SYNCABLE_TABLES = [

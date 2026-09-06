@@ -1,9 +1,9 @@
 {
   "name": "@tedks/goals-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "commonjs",
   "description": "Help a person plan and reflect on their Goals through MCP",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "author": "Ted Smith",
   "repository": { "type": "git", "url": "git+https://github.com/tedks/goals-mcp.git" },
   "homepage": "https://github.com/tedks/goals-mcp#readme",
