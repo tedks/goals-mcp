@@ -22,6 +22,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: npm-shrinkwrap.json
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm test
@@ -33,5 +34,7 @@ jobs:
           npm pack --ignore-scripts --json > pack.json
           archive=$(node -p 'require("./pack.json")[0].filename')
           sha256sum "$archive" > SHA256SUMS
+          node -e 'const fs = require("node:fs"); const notes = fs.readFileSync("CHANGELOG.md", "utf8").split(/^## /m)[1]; if (!notes) process.exit(1); fs.writeFileSync("release-notes.md", "## " + notes)'
           gh release create "$GITHUB_REF_NAME" "$archive" SHA256SUMS \
-            --verify-tag --title "Goals MCP $GITHUB_REF_NAME" --notes-file CHANGELOG.md
+            --draft --verify-tag --title "Goals MCP $GITHUB_REF_NAME" --notes-file release-notes.md
+          gh release edit "$GITHUB_REF_NAME" --draft=false

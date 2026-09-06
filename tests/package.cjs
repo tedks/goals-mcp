@@ -18,7 +18,8 @@ try {
   const [pack] = JSON.parse(runNpm(['pack', '--ignore-scripts', '--json', '--pack-destination', directory]));
   assert.ok(pack.files.some((file) => file.path === 'dist/mcp/stdio.js'));
   assert.ok(pack.files.some((file) => file.path === 'LICENSE'));
-  assert.ok(pack.files.every((file) => /^(dist\/|src\/|docs\/|package.json$|README.md$|LICENSE$|CHANGELOG.md$|GOALS_DATA_SCHEMA.json$|SOURCE.json$|AGENTS.md$)/.test(file.path)), 'Unexpected package content');
+  assert.ok(pack.files.some((file) => file.path === 'npm-shrinkwrap.json'));
+  assert.ok(pack.files.every((file) => /^(dist\/|src\/|docs\/|package.json$|README.md$|LICENSE$|CHANGELOG.md$|SOURCE.json$|AGENTS.md$|SECURITY.md$|npm-shrinkwrap.json$)/.test(file.path)), 'Unexpected package content');
   runNpm(['install', '--prefix', directory, '--ignore-scripts', '--omit=dev', '--no-audit', '--no-fund', join(directory, pack.filename)]);
   const installed = join(directory, 'node_modules/@tedks/goals-mcp');
   const manifest = JSON.parse(readFileSync(join(installed, 'package.json'), 'utf8'));
@@ -28,5 +29,12 @@ try {
   execFileSync(process.execPath, ['--test', resolve(__dirname, 'protocol.test.cjs')], {
     timeout: 60000, stdio: 'inherit', env: { ...process.env, GOALS_MCP_TEST_ENTRY: entry },
   });
-  console.log('Packed MCP clean-install verification passed.');
-} finally { rmSync(directory, { recursive: true, force: true }); }
+  // Exercise the primary documented launcher too, with a fresh npm cache.
+  execFileSync(process.execPath, ['--test', resolve(__dirname, 'protocol.test.cjs')], {
+    timeout: 180000, stdio: 'inherit', env: { ...process.env,
+      GOALS_MCP_TEST_ENTRY: entry, GOALS_MCP_TEST_PACKAGE: join(directory, pack.filename),
+      GOALS_MCP_TEST_CACHE: join(directory, 'exec-cache'),
+    },
+  });
+  console.log('Packed MCP clean-install and npx verification passed.');
+} finally { rmSync(directory, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }); }

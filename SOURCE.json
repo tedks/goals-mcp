@@ -1,6 +1,7 @@
 {
   "package": "@tedks/goals-mcp",
   "version": "0.1.0",
+  "description": "Canonical source inventory. SOURCE.json is generated; CLAUDE.md is a repository-only symlink to AGENTS.md.",
   "files": [
     "src/mcp/client.ts",
     "src/mcp/server.ts",
@@ -9,18 +10,19 @@
     "src/agent/schemas.ts",
     "docs/agent-api.md",
     "docs/agent-setup.md",
-    "GOALS_DATA_SCHEMA.json",
     "package.json",
-    "package-lock.json",
+    "npm-shrinkwrap.json",
     "tsconfig.json",
     "README.md",
     "LICENSE",
     "AGENTS.md",
+    "SECURITY.md",
     "CHANGELOG.md",
     ".gitignore",
     ".github/workflows/ci.yml",
     ".github/workflows/release.yml",
     "tests/protocol.test.cjs",
+    "tests/contract.test.cjs",
     "tests/package.cjs",
     "docs/AGENTS.md"
   ]

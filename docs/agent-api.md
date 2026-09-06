@@ -77,9 +77,19 @@ Pages are live reads, not a frozen snapshot; re-list if concurrent changes matte
 GET `/api/v1/:collection/:id` returns `{item}` or 404, including for another
 account's record. Collections: visions, actions, sprints, adaptations,
 metric_templates, metric_values, sprint_predictions, postmortems.
-Fields follow the [snake_case data schema](../GOALS_DATA_SCHEMA.json) (with the sprint timing
-redactions described above and computed `planning_guidance` on actions), with `sync_version` as an
-opaque decimal string. Internal account identifiers are never returned.
+Records use snake_case fields, with the sprint timing redactions described above
+and computed `planning_guidance` on actions. These records are API responses, not
+backup/import documents. The API's authoritative input contract is
+`GET /api/v1/schema`, generated from the same validators used by the tools and
+write endpoints. `sync_version` is a positive decimal string of at most 19 digits;
+carry it unchanged into `expected_version`, without arithmetic or comparison.
+Internal account identifiers are never returned.
+
+Input limits: vision/action titles are 500 characters; wish/outcome and notes
+20,000; each obstacle and response 4,000. Obstacle planning allows at most 50
+pairs. Habit recurrence supports `daily`, `n_per_week` with `n` from 1 to 7, and
+`specific_days` with a nonempty unique list of lowercase weekday names. These
+limits and recurrence alternatives are checked by the API and the MCP client.
 
 POST `/api/v1/visions` and `/api/v1/actions` create records with a caller-chosen
 ID (1–128 URL-safe characters). A duplicate ID returns 409 without modifying any

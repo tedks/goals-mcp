@@ -23,6 +23,7 @@ and an MCP client that supports local stdio servers.
       "command": "npx",
       "args": [
         "--yes",
+        "--ignore-scripts",
         "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.0/tedks-goals-mcp-0.1.0.tgz",
         "goals-mcp"
       ],
@@ -34,6 +35,9 @@ and an MCP client that supports local stdio servers.
   }
 }
 ```
+
+This package is distributed through the exact GitHub release URL above. It is
+not published on the npm registry; do not substitute `npx @tedks/goals-mcp`.
 
 The first launch downloads the pinned release and its dependencies. Keep the
 token in the client's secret/environment configuration, outside prompts and

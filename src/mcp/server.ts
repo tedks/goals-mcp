@@ -32,7 +32,7 @@ export function createGoalsMcpServer(api: GoalsApiClient): McpServer {
   };
 
   server.registerTool('get_workflow', { description: 'Check whether goal changes are allowed and read human planning/reflection prompts. If review is required, help the person review in Goals and sync; do not bypass the gate.',
-    inputSchema: z.strictObject({}), annotations: readAnnotations,
+    inputSchema: z.strictObject({}).default({}), annotations: readAnnotations,
   }, (_input, { signal }) => call('/api/v1/workflow', 'GET', undefined, signal));
 
   server.registerTool('list_records', { description: 'List visions, actions, or supporting goal context. Follow next_cursor with after to read the next page.',

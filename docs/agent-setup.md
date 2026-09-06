@@ -24,6 +24,7 @@ configuration, use this pinned public release:
       "command": "npx",
       "args": [
         "--yes",
+        "--ignore-scripts",
         "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.0/tedks-goals-mcp-0.1.0.tgz",
         "goals-mcp"
       ],
@@ -44,7 +45,7 @@ needed to install it. The first launch downloads the release and dependencies.
 
 For a different Goals deployment, use its API origin without `/api`, credentials,
 a query or fragment. HTTPS is required remotely; HTTP is accepted only for
-loopback development (for example `http://127.0.0.1:3000`). Tokens belong to the
+loopback development (for example `http://127.0.0.1:3001` for the Docker dev stack). Tokens belong to the
 issuing deployment. Keep secrets outside version control, chat prompts and shell
 history. Restart or reconnect your MCP client after changing its configuration.
 
@@ -62,7 +63,8 @@ Configure `command` as the absolute path to your Node executable and `args` as
 `["/absolute/path/to/goals-agent/node_modules/@tedks/goals-mcp/dist/mcp/stdio.js"]`,
 with the same two environment values above. Use your platform's paths, escaping
 backslashes in JSON on Windows. This also avoids a download check during launch.
-You can download the release asset and verify its SHA-256 against `SHA256SUMS`
+Runtime dependencies are locked by the shipped npm shrinkwrap. You can
+download the release asset and verify its SHA-256 against `SHA256SUMS`
 on the release page before installing the local archive.
 
 ### Check the connection
@@ -148,7 +150,8 @@ won: read again and reconsider your change. A `review_required` 409 means the
 person must complete their review in Goals and sync; `sync_required` or
 `workflow_unavailable` means the current cloud sprint is absent or unreadable. If a request times out, read the same
 ID before retrying because it may already have committed. The MCP adapter does
-not automatically retry writes. MCP responses are capped at 4 MiB; reduce the
+not automatically retry writes. Upstream API response bodies are capped at 4 MiB (MCP results also include
+a structured copy); reduce the
 page size if a list exceeds that limit.
 
 401 means the token is invalid/expired/revoked; 403 means it lacks the needed
@@ -161,6 +164,9 @@ can still replace a row according to the app's existing receive-order policy.
 | Symptom | Action |
 | --- | --- |
 | Process cannot start | Check Node is version 22 or later and use an absolute executable path. Try the direct Node installation above. |
+| Invalid `GOALS_API_TOKEN` | Copy the complete token from Goals Settings without extra characters. |
+| `response_too_large` (502) | Reduce the page size. After a write, read the record before retrying. |
+| `request_cancelled` (499) | The caller cancelled; read the record before retrying a write. |
 | Invalid `GOALS_API_URL` | Supply only the origin, such as `https://goalsapp.org`, without `/api`. |
 | 401 | Create a replacement token in Goals, update the client secret, reconnect and verify a read; revoke the old token. |
 | 403 | The tool requires write access. Create an appropriately scoped token if the person wants that operation. |
@@ -176,7 +182,8 @@ Tokens created in the app expire after 30 days. Rotate them before expiry using
 the sequence above. If a token was exposed, revoke it immediately. Never put
 secrets or personal goal text in an issue report; include the release version,
 client/platform and redacted error code instead. Reports are welcome at
-[goals-mcp issues](https://github.com/tedks/goals-mcp/issues).
+[goals-mcp issues](https://github.com/tedks/goals-mcp/issues). For security
+vulnerabilities, use [private reporting](https://github.com/tedks/goals-mcp/security/advisories/new).
 
 The full contract is in [agent-api.md](agent-api.md). Agent-driven sprint reviews,
 hosted OAuth MCP and local-only guest data access are outside this release.

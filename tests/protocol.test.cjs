@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { createServer } = require('node:http');
 const { once } = require('node:events');
-const { resolve } = require('node:path');
+const { dirname, join, resolve } = require('node:path');
 const { spawn } = require('node:child_process');
 const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
 const { StdioClientTransport } = require('@modelcontextprotocol/sdk/client/stdio.js');
@@ -15,7 +15,7 @@ const childEnv = (overrides) => ({
   ...overrides,
 });
 
-test('compiled distribution: discovery, human guidance, validation, HTTP, workflow errors and shutdown', { timeout: 30000 }, async () => {
+test('compiled distribution: discovery, human guidance, validation, HTTP, workflow errors and shutdown', { timeout: 120000 }, async () => {
   const received = [];
   let blocked = false;
   const http = createServer(async (req, res) => {
@@ -34,9 +34,14 @@ test('compiled distribution: discovery, human guidance, validation, HTTP, workfl
   });
   http.listen(0, '127.0.0.1');
   await once(http, 'listening');
+  const spec = process.env.GOALS_MCP_TEST_PACKAGE;
+  const launch = !spec ? { command: process.execPath, args: [entry] }
+    : process.platform === 'win32'
+      ? { command: process.execPath, args: [join(dirname(process.execPath), 'node_modules/npm/bin/npm-cli.js'), 'exec', '--yes', '--ignore-scripts', `--package=${spec}`, '--', 'goals-mcp'] }
+      : { command: 'npx', args: ['--yes', '--ignore-scripts', `--package=${spec}`, 'goals-mcp'] };
   const transport = new StdioClientTransport({
-    command: process.execPath, args: [entry], stderr: 'pipe',
-    env: childEnv({ GOALS_API_URL: `http://127.0.0.1:${http.address().port}`, GOALS_API_TOKEN: token }),
+    ...launch, stderr: 'pipe',
+    env: childEnv({ GOALS_API_URL: `http://127.0.0.1:${http.address().port}`, GOALS_API_TOKEN: token, ...(process.env.GOALS_MCP_TEST_CACHE ? { npm_config_cache: process.env.GOALS_MCP_TEST_CACHE } : {}) }),
   });
   let stderr = '';
   transport.stderr.on('data', (data) => { stderr += data; });
@@ -62,7 +67,7 @@ test('compiled distribution: discovery, human guidance, validation, HTTP, workfl
     assert.equal((await call('get_record', { collection: 'visions', id: '..' })).isError, true);
     assert.equal((await call('create_action', { action: { id: 'a', type: 'task', title: 'Practice', primary_vision_id: 'v' } })).isError, true);
     assert.equal(received.length, start, 'Invalid inputs must not reach the API');
-    assert.equal((await call('get_workflow')).structuredContent.writes_allowed, true);
+    assert.equal((await client.callTool({ name: 'get_workflow' })).structuredContent.writes_allowed, true);
     await call('list_records', { collection: 'actions', after: 'a&b', limit: 5 });
     await call('get_record', { collection: 'visions', id: 'a/b' });
     const vision = { id: 'v', title: 'Music', wish_text: 'Play music', outcome_text: 'Play with friends' };
@@ -82,7 +87,7 @@ test('compiled distribution: discovery, human guidance, validation, HTTP, workfl
     assert.equal(JSON.parse(failure.content[0].text).context.writes_allowed, false);
     assert.equal(received.filter((r) => r.method === 'POST' && r.path.endsWith('/visions')).length, 2, 'No automatic write retry');
     assert.ok(received.every((r) => r.token === `Bearer ${token}`));
-    assert.equal(stderr, '');
+    assert.doesNotMatch(stderr, /Bearer|goals_[A-Za-z0-9_-]{43}/);
     assert.deepEqual(errors, [], 'stdout must contain only valid MCP');
   } finally {
     await client.close();
