@@ -1,6 +1,6 @@
 {
   "name": "@tedks/goals-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "commonjs",
   "description": "Help a person plan and reflect on their Goals through MCP",
   "license": "AGPL-3.0-only",
