@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Ted Smith
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { z } from 'zod';
 import { SYNCABLE_TABLES, isCanonicalDayKey } from './contract';
 

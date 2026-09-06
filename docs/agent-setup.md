@@ -25,7 +25,7 @@ configuration, use this pinned public release:
       "args": [
         "--yes",
         "--ignore-scripts",
-        "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.0/tedks-goals-mcp-0.1.0.tgz",
+        "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.1/tedks-goals-mcp-0.1.1.tgz",
         "goals-mcp"
       ],
       "env": {
@@ -58,7 +58,7 @@ release into a directory you control:
 
 ```sh
 npm install --prefix /absolute/path/to/goals-agent --ignore-scripts --omit=dev \
-  https://github.com/tedks/goals-mcp/releases/download/v0.1.0/tedks-goals-mcp-0.1.0.tgz
+  https://github.com/tedks/goals-mcp/releases/download/v0.1.1/tedks-goals-mcp-0.1.1.tgz
 ```
 
 Configure `command` as the absolute path to your Node executable and `args` as

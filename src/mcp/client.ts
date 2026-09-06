@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Ted Smith
+// SPDX-License-Identifier: AGPL-3.0-only
+
 export class GoalsApiError extends Error {
   constructor(readonly status: number, readonly code: string, message: string, readonly context?: unknown) { super(message); }
 }

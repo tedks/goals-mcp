@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Ted Smith
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
@@ -19,7 +22,7 @@ const updateAnnotations = { readOnlyHint: false, destructiveHint: true, idempote
 const pathId = schemas.recordId.refine((id) => id !== '.' && id !== '..', 'IDs cannot be reserved dot path segments.');
 
 export function createGoalsMcpServer(api: GoalsApiClient): McpServer {
-  const server = new McpServer({ name: 'goals', version: '0.1.0' }, { instructions: AGENT_GUIDE });
+  const server = new McpServer({ name: 'goals', version: '0.1.1' }, { instructions: AGENT_GUIDE });
   const call = async (path: string, method?: string, body?: unknown, signal?: AbortSignal): Promise<CallToolResult> => {
     try {
       const data = await api.request(path, method, body, signal);
