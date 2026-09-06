@@ -2,6 +2,11 @@
 
 This is the public distribution of the Goals MCP adapter and portable API
 contracts. Runtime collaboration instructions are in [docs/AGENTS.md](docs/AGENTS.md).
+They are shared priming for paid Sync API/MCP access and computer use with local
+Goals, including non-paying users. Keep that document identical to the MCP's
+initialization/guide instructions, and keep [the human overview](docs/how-goals-works.md)
+consistent. Never imply that local-only users need an API token or subscription
+to use computer-use agents.
 
 Use Node.js 22 or later. Install locked dependencies with `npm ci --ignore-scripts`.
 Build with `npm run build` and test with `npm test`. Tests launch the compiled

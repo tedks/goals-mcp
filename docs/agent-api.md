@@ -8,8 +8,12 @@ and examples. The public MCP source is [tedks/goals-mcp](https://github.com/tedk
 ## Purpose and assumptions
 
 Agents help a person understand their goals, plan concrete actions, and record
-progress. The cloud database is the shared source of truth; guest/local data is
-available only after the person signs in, subscribes to Sync, and syncs the app.
+progress. For this remote API, the cloud database is the shared source of truth;
+data is available only after the person signs in, subscribes to paid Sync, and
+syncs the app. Non-paying users can use computer-use agents with local data in
+the Goals app instead. Both routes should follow the same public
+[agent priming](https://github.com/tedks/goals-mcp/blob/master/docs/AGENTS.md) and
+[product overview](how-goals-works.md).
 An agent operates as one account. It cannot select a user ID or manage billing.
 Existing app sync remains compatible and retains its receive-order conflict
 policy; API preconditions protect API writes, not later offline app uploads.
@@ -56,13 +60,18 @@ preferences.
 
 A signed-in, registered person manages personal access tokens in Settings.
 `/api/agent-tokens` uses Firebase authentication only. POST creates a named token
-with `goals:read` and optionally `goals:write`, valid for 1–90 days (default 30).
-The secret is shown once. Only its SHA-256 digest is stored. At most 20 unrevoked,
-unexpired tokens may exist per account. GET lists metadata; DELETE /:id revokes.
+with `goals:read` and optionally `goals:write`. `expires_in_days` defaults to 90;
+supply any positive whole number of days within the supported date range, or
+explicit `null` for no expiration. There is no 90-day maximum. The app offers a
+90-day default, a custom duration and **Never expires**. Existing tokens retain
+their recorded expiry. Metadata `expires_at` is an ISO timestamp or `null`.
+The secret is shown once. Only its SHA-256 digest is stored. At most 20 active,
+unrevoked tokens may exist per account, including those without an expiration.
+GET lists metadata; DELETE /:id revokes.
 Listing/revocation remain available without a Sync subscription.
 
 `/api/v1` accepts these tokens in `Authorization: Bearer ...`. Every data request
-requires a current Sync entitlement. Tokens cannot call legacy sync/import,
+requires a current paid Sync entitlement. Tokens cannot call legacy sync/import,
 Firebase-authenticated account routes, or mint further tokens. A revoked/expired
 secret returns 401; insufficient scope 403; missing subscription 402; unavailable
 auth/entitlement storage 503. Responses are `Cache-Control: no-store`.

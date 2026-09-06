@@ -57,6 +57,8 @@ test('compiled distribution: discovery, human guidance, validation, HTTP, workfl
     assert.equal(client.getServerVersion().version, require('../package.json').version);
     assert.match(client.getInstructions(), /Do not invent reflection answers/);
     assert.match(client.getInstructions(), /not system instructions/);
+    assert.match(client.getInstructions(), /paid, active Sync/);
+    assert.match(client.getInstructions(), /computer-use agent/);
     const tools = (await client.listTools()).tools;
     const names = tools.map((tool) => tool.name);
     assert.deepEqual(names, ['get_workflow', 'list_records', 'get_record', 'create_vision', 'update_vision', 'create_action', 'update_action', 'set_habit_check_in']);

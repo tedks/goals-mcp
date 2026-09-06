@@ -1,16 +1,44 @@
 # Connect an agent to Goals
 
-The agent API and local MCP server work with your synced cloud account. Sign in,
-activate Sync, and use **Settings → Sync Now** to upload your goals first.
+Choose the route that matches where your data lives:
+
+| Your setup | Integration |
+| --- | --- |
+| Paid, active Sync with cloud-synced goals | Use the API or local MCP server below. |
+| Local-only Goals, including non-paying users | Use a computer-use agent through the Goals app on your device. No Goals API token or Sync subscription is needed. |
+
+Both routes should read the same public [agent priming](https://github.com/tedks/goals-mcp/blob/master/docs/AGENTS.md)
+and [human overview](how-goals-works.md). These explain WOOP, its rhythm in Goals,
+the hidden sprint ending and human-owned reviews. They require no account or
+subscription.
+
+## Use a computer-use agent with local Goals
+
+Open Goals on the device and browser profile that contains your data. Give your
+computer-use agent the shared priming above and ask it to help through the visible
+app. Your agent client must provide computer-use capability. The agent should ask
+for your own answers, confirm changes, and let you complete sprint reviews. It
+should respect the app's controls and keep hidden sprint timing hidden.
+
+Local-only data stays on your device. There is no remote dataset for the API to
+read, so an API token cannot connect to it. If the agent sees no local goals,
+check the device or browser profile. The [human overview](how-goals-works.md)
+includes a ready-to-use starting prompt.
+
+## Connect through paid Sync
+
+The API and MCP data tools require **paid, active Sync**. Sign in, activate Sync,
+and use **Settings → Sync Now** to upload your goals before using them.
 
 ## Create a token
 
 In **Settings → Agent access → Manage Agent Access**, name your agent and create
 a token. Access defaults to read-only. Enable **Allow updates to goals and
 progress** if you want the agent to change plans or record progress. Copy the
-secret while it is displayed; it cannot be retrieved later. Tokens expire after
-30 days when created in the app. You can revoke them in the same panel, including
-after cancelling Sync.
+secret while it is displayed; it cannot be retrieved later. Tokens default to
+90 days. Choose a different positive number of days or **Never expires** when
+creating one. You can revoke them in the same panel, including after cancelling
+Sync.
 
 ## Start the MCP server
 
@@ -25,7 +53,7 @@ configuration, use this pinned public release:
       "args": [
         "--yes",
         "--ignore-scripts",
-        "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.1/tedks-goals-mcp-0.1.1.tgz",
+        "--package=https://github.com/tedks/goals-mcp/releases/download/v0.1.2/tedks-goals-mcp-0.1.2.tgz",
         "goals-mcp"
       ],
       "env": {
@@ -58,7 +86,7 @@ release into a directory you control:
 
 ```sh
 npm install --prefix /absolute/path/to/goals-agent --ignore-scripts --omit=dev \
-  https://github.com/tedks/goals-mcp/releases/download/v0.1.1/tedks-goals-mcp-0.1.1.tgz
+  https://github.com/tedks/goals-mcp/releases/download/v0.1.2/tedks-goals-mcp-0.1.2.tgz
 ```
 
 Configure `command` as the absolute path to your Node executable and `args` as
@@ -157,7 +185,7 @@ a structured copy); reduce the
 page size if a list exceeds that limit.
 
 401 means the token is invalid/expired/revoked; 403 means it lacks the needed
-scope; 402 means Sync access is inactive; 503 means the service or connection is
+scope; 402 means paid Sync access is inactive (use computer use with local Goals as an alternative); 503 means the service or connection is
 unavailable. Edits appear in the app on its next sync. A later offline app upload
 can still replace a row according to the app's existing receive-order policy.
 
@@ -172,7 +200,7 @@ can still replace a row according to the app's existing receive-order policy.
 | Invalid `GOALS_API_URL` | Supply only the origin, such as `https://goalsapp.org`, without `/api`. |
 | 401 | Create a replacement token in Goals, update the client secret, reconnect and verify a read; revoke the old token. |
 | 403 | The tool requires write access. Create an appropriately scoped token if the person wants that operation. |
-| 402 | Check the account's Sync subscription in Goals. |
+| 402 | Check the account's paid Sync subscription, or use a computer-use agent with the app's local data and the same public priming. |
 | `review_required` | Complete the human review in Goals, then Sync Now. |
 | `sync_required` / `workflow_unavailable` | Open Goals and sync a usable current sprint. |
 | `version_conflict` | Read the current record and reconsider the change. |
@@ -180,15 +208,18 @@ can still replace a row according to the app's existing receive-order policy.
 | 503, cancellation or unreadable reply | A write may have committed. Read its stable ID before retrying. |
 | Changes not visible in Goals | Use Sync Now. Offline uploads follow the app's receive-order conflict policy. |
 
-Tokens created in the app expire after 30 days. Rotate them before expiry using
-the sequence above. If a token was exposed, revoke it immediately. Never put
-secrets or personal goal text in an issue report; include the release version,
-client/platform and redacted error code instead. Reports are welcome at
+Tokens default to 90 days; a custom duration or **Never expires** is optional.
+Rotate expiring tokens before their chosen expiry using the sequence above.
+Tokens without expiry remain usable until revoked while Sync access is active.
+If a token was exposed, revoke it immediately. Never put secrets or personal
+goal text in an issue report; include the release version, client/platform and
+redacted error code instead. Reports are welcome at
 [goals-mcp issues](https://github.com/tedks/goals-mcp/issues). For security
 vulnerabilities, use [private reporting](https://github.com/tedks/goals-mcp/security/advisories/new).
 
 The full contract is in [agent-api.md](agent-api.md). Agent-driven sprint reviews,
-hosted OAuth MCP and local-only guest data access are outside this release.
+hosted OAuth MCP and access to local-only data through the API are outside this release.
+Computer use works through the app instead.
 
 ## Verify the public source
 
