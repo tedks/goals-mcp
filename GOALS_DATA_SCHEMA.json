@@ -1,0 +1,996 @@
+{
+     "$schema": "https://json-schema.org/draft/2020-12/schema",
+     "$id": "https://goals.example/schema/export/v0.4.0.json",
+     "title": "Goals Export",
+     "type": "object",
+     "required": [
+          "schema_version",
+          "exported_at",
+          "settings",
+          "visions",
+          "actions",
+          "sprints",
+          "sprint_predictions",
+          "metric_templates",
+          "metric_values",
+          "adaptations"
+     ],
+     "additionalProperties": false,
+     "properties": {
+          "schema_version": {
+               "type": "string",
+               "description": "Semantic version of this export schema.",
+               "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "exported_at": {
+               "type": "string",
+               "format": "date-time"
+          },
+          "app": {
+               "type": "object",
+               "additionalProperties": false,
+               "properties": {
+                    "name": {
+                         "type": "string"
+                    },
+                    "build": {
+                         "type": "string"
+                    }
+               }
+          },
+          "settings": {
+               "$ref": "#/$defs/Settings"
+          },
+          "visions": {
+               "type": "array",
+               "items": {
+                    "$ref": "#/$defs/Vision"
+               }
+          },
+          "actions": {
+               "type": "array",
+               "items": {
+                    "$ref": "#/$defs/Action"
+               }
+          },
+          "sprints": {
+               "type": "array",
+               "items": {
+                    "$ref": "#/$defs/Sprint"
+               }
+          },
+          "metric_templates": {
+               "type": "array",
+               "items": {
+                    "$ref": "#/$defs/MetricTemplate"
+               }
+          },
+          "metric_values": {
+               "type": "array",
+               "items": {
+                    "$ref": "#/$defs/MetricValue"
+               }
+          },
+          "adaptations": {
+               "type": "array",
+               "items": {
+                    "$ref": "#/$defs/Adaptation"
+               }
+          },
+          "sprint_predictions": {
+               "type": "array",
+               "items": {
+                    "$ref": "#/$defs/SprintPrediction"
+               }
+          }
+     },
+     "$defs": {
+          "Id": {
+               "type": "string",
+               "minLength": 8,
+               "maxLength": 128,
+               "description": "Opaque unique identifier (e.g., UUID, ULID)."
+          },
+          "HabitCompletionRecord": {
+               "description": "A date-first habit completion. The day key is authoritative; recorded_at audits the assertion; occurred_at exists only when the user explicitly completed the habit at a known instant.",
+               "oneOf": [
+                    {
+                         "type": "object",
+                         "required": [
+                              "day_key",
+                              "recorded_at",
+                              "occurred_at",
+                              "source"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "day_key": {
+                                   "type": "string",
+                                   "format": "date",
+                                   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                              },
+                              "recorded_at": {
+                                   "type": "string",
+                                   "format": "date-time",
+                                   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+                              },
+                              "occurred_at": {
+                                   "const": null
+                              },
+                              "source": {
+                                   "const": "backfill"
+                              }
+                         }
+                    },
+                    {
+                         "type": "object",
+                         "required": [
+                              "day_key",
+                              "recorded_at",
+                              "occurred_at",
+                              "source"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "day_key": {
+                                   "type": "string",
+                                   "format": "date",
+                                   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                              },
+                              "recorded_at": {
+                                   "type": "string",
+                                   "format": "date-time",
+                                   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+                              },
+                              "occurred_at": {
+                                   "type": "string",
+                                   "format": "date-time",
+                                   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+                              },
+                              "source": {
+                                   "const": "completed_now"
+                              }
+                         }
+                    }
+               ]
+          },
+          "Settings": {
+               "type": "object",
+               "required": [
+                    "day_boundary_time",
+                    "week_start",
+                    "telemetry_enabled",
+                    "theme"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "day_boundary_time": {
+                         "type": "string",
+                         "description": "Local time in HH:MM 24h. Defines when a day 'ends' for habit completion.",
+                         "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+                         "default": "04:00"
+                    },
+                    "week_start": {
+                         "type": "string",
+                         "enum": [
+                              "monday",
+                              "sunday",
+                              "saturday"
+                         ],
+                         "default": "monday"
+                    },
+                    "telemetry_enabled": {
+                         "type": "boolean",
+                         "default": true
+                    },
+                    "notification_preferences": {
+                         "type": "object",
+                         "required": [
+                              "sprint_end_reminders_enabled",
+                              "habit_daily_reminders_enabled",
+                              "sprint_review_reminders_enabled"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "sprint_end_reminders_enabled": {
+                                   "type": "boolean",
+                                   "default": false
+                              },
+                              "habit_daily_reminders_enabled": {
+                                   "type": "boolean",
+                                   "default": false
+                              },
+                              "sprint_review_reminders_enabled": {
+                                   "type": "boolean",
+                                   "default": false
+                              }
+                         }
+                    },
+                    "theme": {
+                         "type": "string",
+                         "enum": [
+                              "light",
+                              "dark",
+                              "system"
+                         ],
+                         "default": "system"
+                    }
+               }
+          },
+          "Woop": {
+               "type": "object",
+               "required": [
+                    "obstacles",
+                    "if_then_plans"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "obstacles": {
+                         "type": "array",
+                         "items": {
+                              "type": "string",
+                              "maxLength": 1000
+                         },
+                         "default": []
+                    },
+                    "if_then_plans": {
+                         "type": "array",
+                         "items": {
+                              "type": "object",
+                              "required": [
+                                   "if",
+                                   "then"
+                              ],
+                              "additionalProperties": false,
+                              "properties": {
+                                   "if": {
+                                        "type": "string",
+                                        "maxLength": 1000
+                                   },
+                                   "then": {
+                                        "type": "string",
+                                        "maxLength": 1000
+                                   }
+                              }
+                         },
+                         "default": []
+                    },
+                    "obstacle_plans": {
+                         "type": "array",
+                         "items": {
+                              "type": "object",
+                              "required": [
+                                   "obstacle",
+                                   "if_then_plan"
+                              ],
+                              "additionalProperties": false,
+                              "properties": {
+                                   "obstacle": {
+                                        "type": "string",
+                                        "maxLength": 1000
+                                   },
+                                   "if_then_plan": {
+                                        "type": "string",
+                                        "maxLength": 2000
+                                   }
+                              }
+                         },
+                         "default": []
+                    }
+               }
+          },
+          "Vision": {
+               "type": "object",
+               "required": [
+                    "id",
+                    "title",
+                    "wish_text",
+                    "outcome_text",
+                    "created_at",
+                    "updated_at",
+                    "archived_at"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "title": {
+                         "type": "string",
+                         "maxLength": 200
+                    },
+                    "wish_text": {
+                         "type": "string",
+                         "maxLength": 5000
+                    },
+                    "outcome_text": {
+                         "type": "string",
+                         "maxLength": 5000
+                    },
+                    "created_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "updated_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "archived_at": {
+                         "type": [
+                              "string",
+                              "null"
+                         ],
+                         "format": "date-time"
+                    }
+               }
+          },
+          "Action": {
+               "description": "Discriminated union based on Action.type.",
+               "oneOf": [
+                    {
+                         "$ref": "#/$defs/TaskAction"
+                    },
+                    {
+                         "$ref": "#/$defs/HabitAction"
+                    }
+               ]
+          },
+          "TaskAction": {
+               "type": "object",
+               "required": [
+                    "id",
+                    "type",
+                    "title",
+                    "primary_vision_id",
+                    "woop",
+                    "adaptation_ids",
+                    "notes",
+                    "created_at",
+                    "updated_at",
+                    "archived_at",
+                    "due",
+                    "effort_user",
+                    "status",
+                    "completed_at",
+                    "weight_computed",
+                    "weight_effective"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "type": {
+                         "const": "task"
+                    },
+                    "title": {
+                         "type": "string",
+                         "maxLength": 300
+                    },
+                    "primary_vision_id": {
+                         "$ref": "#/$defs/Id",
+                         "description": "Prototype enforces exactly one Vision per Action."
+                    },
+                    "woop": {
+                         "$ref": "#/$defs/Woop"
+                    },
+                    "adaptation_ids": {
+                         "type": "array",
+                         "items": {
+                              "$ref": "#/$defs/Id"
+                         },
+                         "default": []
+                    },
+                    "notes": {
+                         "type": "string",
+                         "maxLength": 10000,
+                         "default": ""
+                    },
+                    "created_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "updated_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "archived_at": {
+                         "type": [
+                              "string",
+                              "null"
+                         ],
+                         "format": "date-time"
+                    },
+                    "due": {
+                         "type": "object",
+                         "required": [
+                              "type",
+                              "due_at"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "type": {
+                                   "type": "string",
+                                   "enum": [
+                                        "sprint_end",
+                                        "date_time"
+                                   ]
+                              },
+                              "due_at": {
+                                   "type": [
+                                        "string",
+                                        "null"
+                                   ],
+                                   "format": "date-time",
+                                   "description": "If due.type is sprint_end, due_at may be null and derived from current sprint end."
+                              }
+                         }
+                    },
+                    "effort_user": {
+                         "type": "integer",
+                         "minimum": 1,
+                         "maximum": 5
+                    },
+                    "status": {
+                         "type": "string",
+                         "enum": [
+                              "open",
+                              "done",
+                              "archived"
+                         ]
+                    },
+                    "completed_at": {
+                         "type": [
+                              "string",
+                              "null"
+                         ],
+                         "format": "date-time"
+                    },
+                    "weight_computed": {
+                         "type": "number"
+                    },
+                    "weight_effective": {
+                         "type": "number"
+                    },
+                    "blocked_by": {
+                         "type": "array",
+                         "items": {
+                              "$ref": "#/$defs/Id"
+                         },
+                         "uniqueItems": true,
+                         "default": [],
+                         "description": "IDs of prerequisite tasks. Optional for exports created before task dependencies were introduced."
+                    }
+               }
+          },
+          "HabitAction": {
+               "type": "object",
+               "required": [
+                    "id",
+                    "type",
+                    "title",
+                    "primary_vision_id",
+                    "woop",
+                    "adaptation_ids",
+                    "notes",
+                    "created_at",
+                    "updated_at",
+                    "archived_at",
+                    "recurrence",
+                    "completions"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "type": {
+                         "const": "habit"
+                    },
+                    "title": {
+                         "type": "string",
+                         "maxLength": 300
+                    },
+                    "primary_vision_id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "woop": {
+                         "$ref": "#/$defs/Woop"
+                    },
+                    "adaptation_ids": {
+                         "type": "array",
+                         "items": {
+                              "$ref": "#/$defs/Id"
+                         },
+                         "default": []
+                    },
+                    "notes": {
+                         "type": "string",
+                         "maxLength": 10000,
+                         "default": ""
+                    },
+                    "created_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "updated_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "archived_at": {
+                         "type": [
+                              "string",
+                              "null"
+                         ],
+                         "format": "date-time"
+                    },
+                    "recurrence": {
+                         "type": "object",
+                         "required": [
+                              "type"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "type": {
+                                   "type": "string",
+                                   "enum": [
+                                        "daily"
+                                   ]
+                              }
+                         }
+                    },
+                    "completions": {
+                         "type": "array",
+                         "items": {
+                              "anyOf": [
+                                   {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]+)?(Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+                                   },
+                                   {
+                                        "type": "string",
+                                        "format": "date",
+                                        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                                   },
+                                   {
+                                        "$ref": "#/$defs/HabitCompletionRecord"
+                                   }
+                              ]
+                         },
+                         "description": "Date-first completion records plus seconds-bearing legacy observed timestamps and explicit habit-day keys retained for compatibility. Readable historic timestamp variants are normalized before portable export without changing their asserted offset."
+                    }
+               }
+          },
+          "Sprint": {
+               "type": "object",
+               "required": [
+                    "id",
+                    "phase",
+                    "start_at",
+                    "end_at",
+                    "length_days",
+                    "window_sprints",
+                    "sampling_method",
+                    "review"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "phase": {
+                         "type": "integer",
+                         "minimum": 0,
+                         "description": "Ramp-up phase at time of sprint creation."
+                    },
+                    "start_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "end_at": {
+                         "type": "string",
+                         "format": "date-time",
+                         "description": "Hidden from user; stored for determinism."
+                    },
+                    "length_days": {
+                         "type": "integer",
+                         "minimum": 1
+                    },
+                    "window_sprints": {
+                         "type": "integer",
+                         "minimum": 1
+                    },
+                    "sampling_method": {
+                         "type": "string",
+                         "enum": [
+                              "uniform"
+                         ],
+                         "default": "uniform"
+                    },
+                    "review": {
+                         "type": "object",
+                         "required": [
+                              "completed_at",
+                              "early_completion",
+                              "answers"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "completed_at": {
+                                   "type": [
+                                        "string",
+                                        "null"
+                                   ],
+                                   "format": "date-time"
+                              },
+                              "early_completion": {
+                                   "type": "object",
+                                   "required": [
+                                        "triggered",
+                                        "time_left_seconds"
+                                   ],
+                                   "additionalProperties": false,
+                                   "properties": {
+                                        "triggered": {
+                                             "type": "boolean"
+                                        },
+                                        "time_left_seconds": {
+                                             "type": "integer",
+                                             "minimum": 0
+                                        }
+                                   }
+                              },
+                              "answers": {
+                                   "type": "object",
+                                   "required": [
+                                        "what_worked",
+                                        "what_didnt",
+                                        "postmortems",
+                                        "task_rollover"
+                                   ],
+                                   "additionalProperties": false,
+                                   "properties": {
+                                        "what_worked": {
+                                             "type": "string",
+                                             "maxLength": 20000
+                                        },
+                                        "what_didnt": {
+                                             "type": "string",
+                                             "maxLength": 20000
+                                        },
+                                        "postmortems": {
+                                             "type": "array",
+                                             "items": {
+                                                  "$ref": "#/$defs/Postmortem"
+                                             },
+                                             "default": []
+                                        },
+                                        "task_rollover": {
+                                             "type": "array",
+                                             "items": {
+                                                  "type": "object",
+                                                  "required": [
+                                                       "task_id",
+                                                       "decision"
+                                                  ],
+                                                  "additionalProperties": false,
+                                                  "properties": {
+                                                       "task_id": {
+                                                            "$ref": "#/$defs/Id"
+                                                       },
+                                                       "decision": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                 "renew",
+                                                                 "retire"
+                                                            ]
+                                                       }
+                                                  }
+                                             },
+                                             "default": []
+                                        }
+                                   }
+                              }
+                         }
+                    }
+               }
+          },
+          "MetricTemplate": {
+               "type": "object",
+               "required": [
+                    "id",
+                    "scope",
+                    "type",
+                    "config",
+                    "created_at"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "scope": {
+                         "type": "object",
+                         "required": [
+                              "type",
+                              "vision_id"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "type": {
+                                   "type": "string",
+                                   "enum": [
+                                        "vision",
+                                        "global"
+                                   ]
+                              },
+                              "vision_id": {
+                                   "type": [
+                                        "string",
+                                        "null"
+                                   ],
+                                   "description": "Null when scope.type is global."
+                              }
+                         }
+                    },
+                    "type": {
+                         "type": "string",
+                         "enum": [
+                              "habit_adherence",
+                              "task_weight_completed"
+                         ]
+                    },
+                    "config": {
+                         "type": "object",
+                         "additionalProperties": true,
+                         "default": {}
+                    },
+                    "created_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    }
+               }
+          },
+          "MetricValue": {
+               "type": "object",
+               "required": [
+                    "id",
+                    "metric_template_id",
+                    "sprint_id",
+                    "value",
+                    "computed_at",
+                    "expected_next",
+                    "expected_range"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "metric_template_id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "sprint_id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "value": {
+                         "type": "number"
+                    },
+                    "computed_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "expected_next": {
+                         "type": "number"
+                    },
+                    "expected_range": {
+                         "type": "object",
+                         "required": [
+                              "min",
+                              "max"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "min": {
+                                   "type": "number"
+                              },
+                              "max": {
+                                   "type": "number"
+                              }
+                         }
+                    },
+                    "task_effort_model_version": {
+                         "type": "integer",
+                         "minimum": 1
+                    }
+               }
+          },
+          "FailureCategory": {
+               "type": "string",
+               "enum": [
+                    "planning_error",
+                    "motivation",
+                    "external_blocker",
+                    "scope_creep",
+                    "competing_priority",
+                    "skill_gap",
+                    "environmental",
+                    "other"
+               ]
+          },
+          "PostmortemEntry": {
+               "type": "object",
+               "required": [
+                    "action_id",
+                    "failure_category"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "action_id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "failure_category": {
+                         "type": [
+                              "string",
+                              "null"
+                         ],
+                         "enum": [
+                              "planning_error",
+                              "motivation",
+                              "external_blocker",
+                              "scope_creep",
+                              "competing_priority",
+                              "skill_gap",
+                              "environmental",
+                              "other",
+                              null
+                         ]
+                    },
+                    "root_cause": {
+                         "type": "string",
+                         "maxLength": 20000
+                    },
+                    "counterfactual": {
+                         "type": "string",
+                         "maxLength": 20000
+                    }
+               }
+          },
+          "Postmortem": {
+               "type": "object",
+               "required": [
+                    "failure_mode",
+                    "adaptation_id"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "failure_mode": {
+                         "type": "string",
+                         "maxLength": 20000
+                    },
+                    "adaptation_id": {
+                         "type": [
+                              "string",
+                              "null"
+                         ],
+                         "description": "If user created an adaptation in review."
+                    },
+                    "entries": {
+                         "type": "array",
+                         "items": {
+                              "$ref": "#/$defs/PostmortemEntry"
+                         },
+                         "default": []
+                    }
+               }
+          },
+          "Adaptation": {
+               "type": "object",
+               "required": [
+                    "id",
+                    "text",
+                    "created_at",
+                    "created_from",
+                    "linked_action_ids",
+                    "usage_count"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "text": {
+                         "type": "string",
+                         "maxLength": 20000
+                    },
+                    "created_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    },
+                    "created_from": {
+                         "type": "object",
+                         "required": [
+                              "sprint_id",
+                              "action_ids",
+                              "failure_mode"
+                         ],
+                         "additionalProperties": false,
+                         "properties": {
+                              "sprint_id": {
+                                   "$ref": "#/$defs/Id"
+                              },
+                              "action_ids": {
+                                   "type": "array",
+                                   "items": {
+                                        "$ref": "#/$defs/Id"
+                                   },
+                                   "default": []
+                              },
+                              "failure_mode": {
+                                   "type": "string",
+                                   "maxLength": 20000
+                              }
+                         }
+                    },
+                    "linked_action_ids": {
+                         "type": "array",
+                         "items": {
+                              "$ref": "#/$defs/Id"
+                         },
+                         "default": []
+                    },
+                    "usage_count": {
+                         "type": "integer",
+                         "minimum": 0,
+                         "default": 0
+                    }
+               }
+          },
+          "SprintPrediction": {
+               "type": "object",
+               "required": [
+                    "sprint_id",
+                    "predicted_habit_adherence",
+                    "predicted_task_weight",
+                    "created_at"
+               ],
+               "additionalProperties": false,
+               "properties": {
+                    "sprint_id": {
+                         "$ref": "#/$defs/Id"
+                    },
+                    "predicted_habit_adherence": {
+                         "type": "number",
+                         "minimum": 0,
+                         "maximum": 1
+                    },
+                    "predicted_task_weight": {
+                         "type": "number",
+                         "minimum": 0
+                    },
+                    "task_effort_model_version": {
+                         "type": "integer",
+                         "minimum": 1
+                    },
+                    "actual_habit_adherence": {
+                         "type": "number",
+                         "minimum": 0,
+                         "maximum": 1
+                    },
+                    "actual_task_weight": {
+                         "type": "number",
+                         "minimum": 0
+                    },
+                    "actual_task_effort_model_version": {
+                         "type": "integer",
+                         "minimum": 1
+                    },
+                    "created_at": {
+                         "type": "string",
+                         "format": "date-time"
+                    }
+               }
+          }
+     }
+}
