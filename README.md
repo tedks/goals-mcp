@@ -14,10 +14,10 @@ app, without a Goals API token or Sync subscription.
 
 Both routes use the same public [agent priming](docs/AGENTS.md) and
 [human overview](docs/how-goals-works.md), covering WOOP, the planning/review rhythm
-and hidden sprint rewards. See the [connection guide](docs/agent-setup.md) for the
+and hidden sprint endings. See the [connection guide](docs/agent-setup.md) for the
 computer-use path as well as API/MCP setup. These docs need no account or payment.
 
-## Connect the MCP server
+## Connect
 
 You need **Node.js 22 or later**, npm, a synced Goals account with paid, active **Sync**,
 and an MCP client that supports local stdio servers.

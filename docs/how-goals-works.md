@@ -33,7 +33,7 @@ it does not establish the effectiveness of every feature in Goals.
 | Create or revisit a goal | Describe your wish and desired outcome. Reconsider whether you still want it and whether it is feasible. |
 | Plan a task or habit | Imagine the sprint ending with the action undone. Identify what might get in the way and pair it with an if-then response. Obstacle planning is optional; you can choose to skip or return to a partial plan. |
 | Do the work | Use the response when its cue appears. Record task or habit completion when the work actually happened. |
-| Review a sprint | Reflect on what worked and what got in the way. Revisit unfinished actions, strategies and postmortems. If you made an optional follow-through estimate, compare it with what happened. |
+| Review a sprint | Reflect on what worked and what got in the way. Revisit unfinished actions, strategies and lessons from unfinished work. If you made an optional follow-through estimate, compare it with what happened. |
 | Begin the next sprint | Carry the learning into your next plans. Adjust an unhelpful strategy or reconsider a goal, rather than treating a setback as a personal failure. |
 
 Reviews are part of the work. When one becomes due, finish it in Goals before
@@ -50,7 +50,9 @@ steady action. When the sprint ends, review is due immediately.
 
 Second, **sprint completion is intended as an uncertain reward**. Completing a
 real task or habit is the action—the “lever pull”—and discovering that a sprint
-has ended is the rewarding outcome whose timing you do not know. The designer's
+has ended is the rewarding outcome. The scheduled boundary is hidden; qualifying
+work can also trigger a deterministic early completion, so uncertainty does not
+apply to every way a sprint can end. The designer's
 variable-reinforcement or “Skinner box” analogy is the unpredictable reward that
 also makes slot machines compelling. The intention is to make returning to
 productive action rewarding.

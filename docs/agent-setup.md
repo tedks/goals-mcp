@@ -28,9 +28,11 @@ includes a ready-to-use starting prompt.
 ## Connect through paid Sync
 
 The API and MCP data tools require **paid, active Sync**. Sign in, activate Sync,
-and use **Settings → Sync Now** to upload your goals before using them.
+and use **Settings → Sync Now** to upload your goals before using them. The token,
+MCP and API instructions below apply to this paid Sync route; computer-use setup
+is complete above.
 
-## Create a token
+### Create a token
 
 In **Settings → Agent access → Manage Agent Access**, name your agent and create
 a token. Access defaults to read-only. Enable **Allow updates to goals and
@@ -40,7 +42,7 @@ secret while it is displayed; it cannot be retrieved later. Tokens default to
 creating one. You can revoke them in the same panel, including after cancelling
 Sync.
 
-## Start the MCP server
+### Start the MCP server
 
 Install Node.js 22 or later (including npm). In clients that accept `mcpServers`
 configuration, use this pinned public release:
@@ -79,7 +81,7 @@ loopback development (for example `http://127.0.0.1:3001` for the Docker dev sta
 issuing deployment. Keep secrets outside version control, chat prompts and shell
 history. Restart or reconnect your MCP client after changing its configuration.
 
-### Direct Node installation
+#### Direct Node installation
 
 If a desktop client cannot find `npx` (or `npx.cmd` on Windows), install the
 release into a directory you control:
@@ -97,7 +99,7 @@ Runtime dependencies are locked by the shipped npm shrinkwrap. You can
 download the release asset and verify its SHA-256 against `SHA256SUMS`
 on the release page before installing the local archive.
 
-### Check the connection
+#### Check the connection
 
 After reconnecting, the client should discover eight tools, three resources and
 one prompt. Ask it to run `get_workflow`, then list your visions. An empty list
@@ -141,7 +143,7 @@ Before recording habit progress, tell the agent your timezone and the day bounda
 shown in Goals Settings. These preferences are local to your device and must be
 supplied explicitly.
 
-## Use the API directly
+### Use the API directly
 
 Set `GOALS_API_URL=https://goalsapp.org` and provide `GOALS_API_TOKEN` through
 your local secret mechanism. Start by checking the workflow and reading goals:
@@ -185,11 +187,11 @@ a structured copy); reduce the
 page size if a list exceeds that limit.
 
 401 means the token is invalid/expired/revoked; 403 means it lacks the needed
-scope; 402 means paid Sync access is inactive (use computer use with local Goals as an alternative); 503 means the service or connection is
-unavailable. Edits appear in the app on its next sync. A later offline app upload
+scope; 402 means paid Sync access is inactive (computer use with local Goals is
+an alternative); 503 means the service or connection is unavailable. Edits appear in the app on its next sync. A later offline app upload
 can still replace a row according to the app's existing receive-order policy.
 
-## Troubleshooting and rotation
+### Troubleshooting and rotation
 
 | Symptom | Action |
 | --- | --- |
@@ -211,6 +213,8 @@ can still replace a row according to the app's existing receive-order policy.
 Tokens default to 90 days; a custom duration or **Never expires** is optional.
 Rotate expiring tokens before their chosen expiry using the sequence above.
 Tokens without expiry remain usable until revoked while Sync access is active.
+**Never expires** removes the automatic cutoff; revocation ends that credential’s
+access.
 If a token was exposed, revoke it immediately. Never put secrets or personal
 goal text in an issue report; include the release version, client/platform and
 redacted error code instead. Reports are welcome at
@@ -220,6 +224,7 @@ vulnerabilities, use [private reporting](https://github.com/tedks/goals-mcp/secu
 The full contract is in [agent-api.md](agent-api.md). Agent-driven sprint reviews,
 hosted OAuth MCP and access to local-only data through the API are outside this release.
 Computer use works through the app instead.
+
 
 ## Verify the public source
 
