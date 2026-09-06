@@ -42,6 +42,8 @@ different configuration format, enter the same command, arguments and environmen
 The server uses local stdio; clients that only accept a remote MCP URL cannot use
 this release. It does not listen on a port. No private repository, Nix or Bazel is
 needed to install it. The first launch downloads the release and dependencies.
+If your client times out during that download, complete the direct installation
+below before reconnecting.
 
 For a different Goals deployment, use its API origin without `/api`, credentials,
 a query or fragment. HTTPS is required remotely; HTTP is accepted only for

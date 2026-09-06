@@ -8,7 +8,11 @@ const lock = require('../npm-shrinkwrap.json');
 const read = (path) => readFileSync(resolve(__dirname, '..', path), 'utf8').replaceAll('\r\n', '\n');
 
 test('public instructions, install URLs and dependency lock match this release', () => {
-  assert.equal(read('docs/AGENTS.md'), '# Collaborating with a person through Goals\n\n' + AGENT_GUIDE.replaceAll('\n', '\n\n') + '\n');
+  assert.equal(read('docs/AGENTS.md'), '# Collaborating with a person through Goals\n\n' + AGENT_GUIDE.replaceAll('\r\n', '\n').replaceAll('\n', '\n\n') + '\n');
+  assert.equal(read('CHANGELOG.md').match(/^## ([^\n]+)/m)?.[1], manifest.version);
+  assert.equal(JSON.parse(read('SOURCE.json')).version, manifest.version);
+  assert.equal(lock.name, manifest.name);
+  assert.equal(lock.packages[''].name, manifest.name);
   assert.equal(lock.version, manifest.version);
   assert.equal(lock.packages[''].version, manifest.version);
   assert.deepEqual(lock.packages[''].dependencies, manifest.dependencies);

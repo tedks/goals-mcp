@@ -1,6 +1,7 @@
 {
   "name": "@tedks/goals-mcp",
   "version": "0.1.0",
+  "type": "commonjs",
   "description": "Help a person plan and reflect on their Goals through MCP",
   "license": "MIT",
   "author": "Ted Smith",
@@ -9,7 +10,7 @@
   "bugs": "https://github.com/tedks/goals-mcp/issues",
   "engines": { "node": ">=22" },
   "bin": { "goals-mcp": "dist/mcp/stdio.js" },
-  "files": ["dist", "src", "docs", "README.md", "LICENSE", "CHANGELOG.md", "SOURCE.json", "AGENTS.md", "SECURITY.md", "npm-shrinkwrap.json"],
+  "files": ["dist", "src", "docs", "README.md", "LICENSE", "CHANGELOG.md", "SOURCE.json", "AGENTS.md", "SECURITY.md", "npm-shrinkwrap.json", ".gitattributes"],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "test": "node --test tests/protocol.test.cjs tests/contract.test.cjs"

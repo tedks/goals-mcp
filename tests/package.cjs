@@ -1,5 +1,5 @@
 /** Pack and exercise a clean consumer installation, without development deps. */
-const { mkdtempSync, readFileSync, rmSync } = require('node:fs');
+const { existsSync, mkdtempSync, readFileSync, rmSync } = require('node:fs');
 const { tmpdir } = require('node:os');
 const { dirname, join, resolve } = require('node:path');
 const { execFileSync } = require('node:child_process');
@@ -19,8 +19,9 @@ try {
   assert.ok(pack.files.some((file) => file.path === 'dist/mcp/stdio.js'));
   assert.ok(pack.files.some((file) => file.path === 'LICENSE'));
   assert.ok(pack.files.some((file) => file.path === 'npm-shrinkwrap.json'));
-  assert.ok(pack.files.every((file) => /^(dist\/|src\/|docs\/|package.json$|README.md$|LICENSE$|CHANGELOG.md$|SOURCE.json$|AGENTS.md$|SECURITY.md$|npm-shrinkwrap.json$)/.test(file.path)), 'Unexpected package content');
+  assert.ok(pack.files.every((file) => /^(dist\/|src\/|docs\/|package.json$|README.md$|LICENSE$|CHANGELOG.md$|SOURCE.json$|AGENTS.md$|SECURITY.md$|npm-shrinkwrap.json$|.gitattributes$)/.test(file.path)), 'Unexpected package content');
   runNpm(['install', '--prefix', directory, '--ignore-scripts', '--omit=dev', '--no-audit', '--no-fund', join(directory, pack.filename)]);
+  assert.equal(existsSync(join(directory, 'node_modules/typescript')), false, 'Consumer must not install the compiler');
   const installed = join(directory, 'node_modules/@tedks/goals-mcp');
   const manifest = JSON.parse(readFileSync(join(installed, 'package.json'), 'utf8'));
   assert.deepEqual(Object.keys(manifest.dependencies).sort(), ['@modelcontextprotocol/sdk', 'zod']);
@@ -31,7 +32,7 @@ try {
   });
   // Exercise the primary documented launcher too, with a fresh npm cache.
   execFileSync(process.execPath, ['--test', resolve(__dirname, 'protocol.test.cjs')], {
-    timeout: 180000, stdio: 'inherit', env: { ...process.env,
+    timeout: 240000, stdio: 'inherit', env: { ...process.env,
       GOALS_MCP_TEST_ENTRY: entry, GOALS_MCP_TEST_PACKAGE: join(directory, pack.filename),
       GOALS_MCP_TEST_CACHE: join(directory, 'exec-cache'),
     },

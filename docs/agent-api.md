@@ -87,7 +87,8 @@ Internal account identifiers are never returned.
 
 Input limits: vision/action titles are 500 characters; wish/outcome and notes
 20,000; each obstacle and response 4,000. Obstacle planning allows at most 50
-pairs. Habit recurrence supports `daily`, `n_per_week` with `n` from 1 to 7, and
+pairs; task `blocked_by` allows at most 100 IDs. Text rejects NUL and unpaired
+Unicode surrogates. Habit recurrence supports `daily`, `n_per_week` with `n` from 1 to 7, and
 `specific_days` with a nonempty unique list of lowercase weekday names. These
 limits and recurrence alternatives are checked by the API and the MCP client.
 
