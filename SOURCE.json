@@ -21,7 +21,6 @@
     "CHANGELOG.md",
     ".gitignore",
     ".gitattributes",
-    ".github/workflows/ci.yml",
     ".github/workflows/release.yml",
     "tests/protocol.test.cjs",
     "tests/contract.test.cjs",
