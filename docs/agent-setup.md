@@ -238,6 +238,6 @@ node tests/package.cjs
 ```
 
 These checks use synthetic tokens and a local fixture API, including a fresh
-installation of the packed archive. The Goals application's own CI additionally
-checks the real API against PostgreSQL, account isolation, workflow gates and
-app/backend contract conformance.
+installation of the packed archive. The Goals application's own test suite
+additionally checks the real API against PostgreSQL, account isolation, workflow
+gates and app/backend contract conformance.

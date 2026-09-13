@@ -160,10 +160,11 @@ not claim support for those workflows.
 
 ## Verification and versioning
 
-The API and MCP share input-contract source. CI checks malformed inputs, account
-isolation, expiry/revocation/scopes, entitlement failures, stale writes, dependency
-cycles, day boundaries, cancellation and sync visibility. PostgreSQL integration
-checks exercise actual API transactions and workflow gates. The public release
+The API and MCP share input-contract source. The Goals application's test suite
+checks malformed inputs, account isolation, expiry/revocation/scopes, entitlement
+failures, stale writes, dependency cycles, day boundaries, cancellation and sync
+visibility. PostgreSQL integration checks exercise actual API transactions and
+workflow gates. The public release
 checks install the archive into a fresh directory and use an official MCP client.
 
 The `/api/v1` prefix identifies the API contract. MCP releases are pinned and
