@@ -15,7 +15,18 @@ records both file hashes; its test catches an update made to either file
 without a reviewed bridge update. The hashes do not by themselves prove
 equivalent dependency resolution.
 
+Goals' `scripts/export-mcp.mjs` source export has an explicit file allowlist
+and does not emit these Bazel, flake, pnpm or lock-bridge files. Preserve this
+child-owned overlay when refreshing the public distribution. If the exported
+shrinkwrap changes, regenerate and review the pnpm lock and bridge hashes in
+the child; do not broaden the public export just to carry build files. The
+nested `src/*/BUILD.bazel` files and this document live under the package's
+existing `src` and `docs` file entries, so inspect the packed archive when
+release content changes.
+
 Run `nix develop --command bazel test //:verify_offline_contract`. Bazel's
 Node toolchain is pinned separately from Nix Node and requires a glibc
 compatible Linux worker. Remote execution and packaging need their own
-qualification before these targets are used as release evidence.
+qualification before these targets are used as release evidence. In
+particular, Bazel Node 24 does not replace the npm packed-install and
+protocol tests on the release's Node 22 path.
