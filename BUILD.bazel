@@ -67,4 +67,5 @@ test_suite(
         ":contract_test",
         ":lock_bridge_test",
     ],
+    visibility = ["//visibility:public"],
 )
