@@ -1,0 +1,5 @@
+packages:
+  - .
+
+# pnpm 10 ignores unapproved install scripts; npm remains the release workflow.
+onlyBuiltDependencies: []
