@@ -10,7 +10,9 @@ against its local HTTP fixture.
 
 The compiler's source labels are the five `js_library` targets themselves,
 so their declared local edges are part of the Bazel analysis graph. External
-npm packages are linked through the root `:node_modules` target.
+npm packages are linked through the root `:node_modules` target. The aggregate
+TypeScript compiler sees all five sources, so it does not enforce each
+individual import against those edges; changes to imports need BUILD review.
 
 The release workflow still uses npm and `npm-shrinkwrap.json`. The Bazel
 rules_js translator consumes `pnpm-lock.yaml`, derived from that published
