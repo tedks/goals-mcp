@@ -1,0 +1,67 @@
+load("@aspect_rules_js//js:defs.bzl", "js_test")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@goals_mcp_npm//:defs.bzl", "npm_link_all_packages")
+
+package(default_visibility = ["//visibility:private"])
+
+exports_files([
+    ".bazelignore",
+    "pnpm-lock.yaml",
+])
+
+npm_link_all_packages(name = "node_modules")
+
+ts_project(
+    name = "compiled",
+    srcs = [
+        "//src/agent:all_sources",
+        "//src/mcp:all_sources",
+    ],
+    out_dir = "dist",
+    root_dir = "src",
+    supports_workers = 0,
+    transpiler = "tsc",
+    tsconfig = "tsconfig.json",
+    visibility = ["//visibility:public"],
+    deps = [":node_modules"],
+)
+
+js_test(
+    name = "contract_test",
+    chdir = "",
+    data = [
+        "AGENTS.md",
+        "CHANGELOG.md",
+        "README.md",
+        "SOURCE.json",
+        "docs/AGENTS.md",
+        "docs/agent-setup.md",
+        "npm-shrinkwrap.json",
+        "package.json",
+        ":compiled",
+        ":node_modules",
+    ],
+    entry_point = "tests/contract.test.cjs",
+    node_options = ["--test"],
+    tags = ["block-network"],
+    visibility = ["//visibility:public"],
+)
+
+js_test(
+    name = "lock_bridge_test",
+    data = [
+        "lock-bridge.json",
+        "npm-shrinkwrap.json",
+        "pnpm-lock.yaml",
+    ],
+    entry_point = "tests/lock-bridge.test.mjs",
+    visibility = ["//visibility:public"],
+)
+
+test_suite(
+    name = "verify_offline_contract",
+    tests = [
+        ":contract_test",
+        ":lock_bridge_test",
+    ],
+)

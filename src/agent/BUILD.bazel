@@ -1,0 +1,25 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+package(default_visibility = ["//visibility:private"])
+
+js_library(
+    name = "contract",
+    srcs = ["contract.ts"],
+    visibility = ["//src/mcp:__pkg__"],
+)
+
+js_library(
+    name = "schemas",
+    srcs = ["schemas.ts"],
+    visibility = ["//src/mcp:__pkg__"],
+    deps = [":contract"],
+)
+
+filegroup(
+    name = "all_sources",
+    srcs = [
+        "contract.ts",
+        "schemas.ts",
+    ],
+    visibility = ["//:__pkg__"],
+)

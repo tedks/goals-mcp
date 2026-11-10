@@ -1,0 +1,37 @@
+module(
+    name = "goals_mcp",
+    version = "0.1.2",
+)
+
+bazel_dep(name = "aspect_rules_js", version = "2.9.2")
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
+bazel_dep(name = "aspect_rules_ts", version = "3.5.2")
+bazel_dep(name = "aspect_tools_telemetry", version = "0.3.3")
+bazel_dep(name = "rules_nodejs", version = "6.7.5")
+
+single_version_override(
+    module_name = "aspect_tools_telemetry",
+    patch_strip = 1,
+    patches = ["//build_defs:telemetry-disabled.patch"],
+    version = "0.3.3",
+)
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+node.toolchain(node_version = "24.22.2")
+
+typescript = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
+typescript.deps(
+    ts_integrity = "sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==",
+    ts_version = "5.7.3",
+)
+use_repo(typescript, "npm_typescript")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "goals_mcp_npm",
+    lifecycle_hooks = {"*": []},
+    pnpm_lock = "//:pnpm-lock.yaml",
+    use_home_npmrc = False,
+    verify_node_modules_ignored = "//:.bazelignore",
+)
+use_repo(npm, "goals_mcp_npm")

@@ -1,0 +1,37 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+package(default_visibility = ["//visibility:private"])
+
+js_library(
+    name = "client",
+    srcs = ["client.ts"],
+)
+
+js_library(
+    name = "server",
+    srcs = ["server.ts"],
+    deps = [
+        ":client",
+        "//src/agent:contract",
+        "//src/agent:schemas",
+    ],
+)
+
+js_library(
+    name = "stdio",
+    srcs = ["stdio.ts"],
+    deps = [
+        ":client",
+        ":server",
+    ],
+)
+
+filegroup(
+    name = "all_sources",
+    srcs = [
+        "client.ts",
+        "server.ts",
+        "stdio.ts",
+    ],
+    visibility = ["//:__pkg__"],
+)
