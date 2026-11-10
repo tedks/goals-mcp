@@ -5,11 +5,13 @@ package(default_visibility = ["//visibility:private"])
 js_library(
     name = "client",
     srcs = ["client.ts"],
+    visibility = ["//:__pkg__"],
 )
 
 js_library(
     name = "server",
     srcs = ["server.ts"],
+    visibility = ["//:__pkg__"],
     deps = [
         ":client",
         "//src/agent:contract",
@@ -20,18 +22,9 @@ js_library(
 js_library(
     name = "stdio",
     srcs = ["stdio.ts"],
+    visibility = ["//:__pkg__"],
     deps = [
         ":client",
         ":server",
     ],
-)
-
-filegroup(
-    name = "all_sources",
-    srcs = [
-        "client.ts",
-        "server.ts",
-        "stdio.ts",
-    ],
-    visibility = ["//:__pkg__"],
 )

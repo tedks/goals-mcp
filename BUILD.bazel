@@ -14,8 +14,11 @@ npm_link_all_packages(name = "node_modules")
 ts_project(
     name = "compiled",
     srcs = [
-        "//src/agent:all_sources",
-        "//src/mcp:all_sources",
+        "//src/agent:contract",
+        "//src/agent:schemas",
+        "//src/mcp:client",
+        "//src/mcp:server",
+        "//src/mcp:stdio",
     ],
     out_dir = "dist",
     root_dir = "src",
@@ -28,7 +31,6 @@ ts_project(
 
 js_test(
     name = "contract_test",
-    chdir = "",
     data = [
         "AGENTS.md",
         "CHANGELOG.md",
@@ -55,6 +57,7 @@ js_test(
         "pnpm-lock.yaml",
     ],
     entry_point = "tests/lock-bridge.test.mjs",
+    tags = ["block-network"],
     visibility = ["//visibility:public"],
 )
 
